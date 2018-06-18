@@ -24,6 +24,7 @@ let open_cards = [];
 let game_over = false;
 let moves = 0;
 let clicks = 0;
+let totalclicks = 0;
 /*
  * Display the cards on the page
  *   - loop through each card and create its HTML
@@ -109,6 +110,27 @@ function playGame() {
   document.querySelectorAll(".card").forEach(function (card) {
 
     card.addEventListener("click", function (e) {
+      if (totalclicks == 0) {
+        var minutesLabel = document.getElementById("minutes");
+        var secondsLabel = document.getElementById("seconds");
+        var totalSeconds = 0;
+        setInterval(setTime, 1000);
+
+        function setTime() {
+          ++totalSeconds;
+          secondsLabel.innerHTML = pad(totalSeconds % 60);
+          minutesLabel.innerHTML = pad(parseInt(totalSeconds / 60));
+        }
+
+        function pad(val) {
+          var valString = val + "";
+          if (valString.length < 2) {
+            return "0" + valString;
+          } else {
+            return valString;
+          }
+        }
+      }
       if (clicks == 1) {
         document.querySelectorAll(".card").forEach(function (c) {
           c.style.cursor = "not-allowed";
@@ -123,12 +145,16 @@ function playGame() {
       } else {
         e.target.style.cursor = "pointer";
       }
+      totalclicks += 1
       clicks = (clicks + 1) % 2
       card = e.target; //current card
       displayCard(card);
       setAsOpenCard(card);
-      moves = moves + 1; //increment moves
-      document.querySelector(".moves").textContent = moves;
+      if (totalclicks % 2 == 0) {
+        moves = moves + 1; //increment moves
+        document.querySelector(".moves").textContent = moves;
+      }
+
       if (open_cards.length > 1) {
         //match found
         if (
